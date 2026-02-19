@@ -8,7 +8,6 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      <home-manager/nixos>
     ];
 
   # Bootloader.
@@ -57,13 +56,14 @@
   };
 
   # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "us";
-    variant = "";
+  services.xserver = {
+    xkb = {
+      layout = "us";
+      variant = "";
+  };
   };
 
- services.displayManager.cosmic-greeter.enable = true;
-
+services.displayManager.cosmic-greeter.enable = true;
  services.desktopManager.cosmic.enable = true;
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -102,10 +102,8 @@
 	 pkgs.gcc
    pkgs.clang
    pkgs.nixd
-   pkgs.rustup
-   pkgs.python314
+   pkgs.python313
    pkgs.pipx
-   pkgs.quartus-prime-lite
    pkgs.gh
    pkgs.caffeine-ng
    pkgs.btop
@@ -129,6 +127,30 @@
    pkgs.obsidian
    pkgs.nodejs_24
    pkgs.anki
+   pkgs.rofi
+   pkgs.firefox
+   pkgs.kitty
+   pkgs.noto-fonts-cjk-serif
+   pkgs.opencode
+   pkgs.cascadia-code
+   pkgs.inter
+   pkgs.openocd
+   pkgs.nemu
+   pkgs.qemu
+   pkgs.cargo
+   pkgs.mangowc
+   pkgs.quickemu
+   pkgs.protonvpn-gui
+   pkgs.rust-analyzer
+   pkgs.rustc
+   pkgs.rustup
+   pkgs.victor-mono
+   pkgs.nerd-fonts.victor-mono
+   pkgs.probe-rs-tools
+   pkgs.cmake
+   pkgs.ghc
+   pkgs.haskell-language-server
+   pkgs.distrobox
   ];
 
   services.tailscale.enable = true;  # Some programs need SUID wrappers, can be configured further or are
@@ -143,6 +165,11 @@
     enable = true;
     remotePlay.openFirewall = true;
   };
+
+virtualisation.podman = {
+  enable = true;
+  dockerCompat = true;
+};
   # List services that you want to enable:
   services.pipewire = {
   enable = true;
@@ -150,8 +177,14 @@
   pulse.enable = true;
   };
   # Enable the OpenSSH daemon.
+boot.binfmt.emulatedSystems = [
+  "aarch64-linux"
+  "riscv64-linux"
+];
 
-
+services.fprintd.enable = true;
+services.fprintd.tod.enable = true;
+services.fprintd.tod.driver = pkgs.libfprint-2-tod1-goodix;
   services.openssh = {
   	enable = true;
 	ports = [ 22 ];
@@ -170,17 +203,13 @@
       '';
   };
 
-  services.fprintd = {
-    enable = true;
-    tod.enable = true;
-    tod.driver = pkgs.libfprint-2-tod1-goodix;
-  };
-
-  nix.gc = {
+ nix.gc = {
     automatic = true;
     randomizedDelaySec = "45min";
     options = "--delete-older-than 7d";
   };
+
+  programs.bash.completion.enable = true;
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
